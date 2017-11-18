@@ -18,7 +18,7 @@
 #include "SSDP.h"
 #include <aJSON.h> // Replace avm/pgmspace.h with pgmspace.h there and set #define PRINT_BUFFER_LEN 4096 ################# IMPORTANT
 
-#include "secrets.h" // Delete this line and populate the following
+#include "secrets.h" // Create this file and populate the following
 //const char* ssid = "********";
 //const char* password = "********";
 
@@ -28,9 +28,9 @@ RgbColor white = RgbColor(COLOR_SATURATION);
 RgbColor black = RgbColor(0);
 
 // Settings for the NeoPixels
-#define NUM_PIXELS_PER_LIGHT 10 // How many physical LEDs per emulated bulb
+#define NUM_PIXELS_PER_LIGHT 8 // How many physical LEDs per emulated bulb
 
-#define pixelCount 30
+#define pixelCount 16
 #define pixelPin 2 // Strip is attached to GPIO2 on ESP-01
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(MAX_LIGHT_HANDLERS * NUM_PIXELS_PER_LIGHT, pixelPin);
 NeoPixelAnimator animator(MAX_LIGHT_HANDLERS * NUM_PIXELS_PER_LIGHT, NEO_MILLISECONDS); // NeoPixel animation management object
@@ -102,7 +102,7 @@ class PixelHandler : public LightHandler {
         {
           // progress will start at 0.0 and end at 1.0
           HslColor updatedColor = HslColor::LinearBlend<NeoHueBlendShortestDistance>(originalColor, black, param.progress);
-          
+
           for(int i=lightNumber * NUM_PIXELS_PER_LIGHT; i < (lightNumber * NUM_PIXELS_PER_LIGHT) + NUM_PIXELS_PER_LIGHT; i++) {
             strip.SetPixelColor(i, updatedColor);
           }
@@ -127,6 +127,8 @@ void infoLight(RgbColor color) {
 }
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
+  digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED on by making the voltage HIGH
 
   // this resets all the neopixels to an off state
   strip.Begin();
@@ -175,12 +177,11 @@ void setup() {
   ArduinoOTA.begin();
 
   // Sync our clock
-  NTP.begin("pool.ntp.org", 0, true);
+  NTP.begin("us.pool.ntp.org", 0, true);
 
   // Show that we are connected
   infoLight(green);
-  pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
-  digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off by making the voltage HIGH
+  pinMode(LED_BUILTIN, INPUT);     // Initialize the LED_BUILTIN pin as an output
 
   LightService.begin();
 
@@ -197,7 +198,7 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-  
+
   LightService.update();
 
   static unsigned long update_strip_time = 0;  //  keeps track of pixel refresh rate... limits updates to 33 Hz
@@ -208,4 +209,3 @@ void loop() {
     update_strip_time = millis();
   }
 }
-

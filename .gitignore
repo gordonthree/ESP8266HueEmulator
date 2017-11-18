@@ -3,3 +3,5 @@
 .piolibdeps
 .vscode/c_cpp_properties.json
 ESP8266HueEmulator/secrets.h
+.clang_complete
+.gcc-flags.json
