@@ -18,7 +18,7 @@
 #include "SSDP.h"
 #include <aJSON.h> // Replace avm/pgmspace.h with pgmspace.h there and set #define PRINT_BUFFER_LEN 4096 ################# IMPORTANT
 
-#include "/secrets.h" // Delete this line and populate the following
+#include "secrets.h" // Delete this line and populate the following
 //const char* ssid = "********";
 //const char* password = "********";
 
@@ -114,6 +114,18 @@ class PixelHandler : public LightHandler {
     HueLightInfo getInfo(int lightNumber) { return _info; }
 };
 
+void infoLight(RgbColor color) {
+  // Flash the strip in the selected color. White = booted, green = WLAN connected, red = WLAN could not connect
+  for (int i = 0; i < pixelCount; i++)
+  {
+    strip.SetPixelColor(i, color);
+    strip.Show();
+    delay(10);
+    strip.SetPixelColor(i, black);
+    strip.Show();
+  }
+}
+
 void setup() {
 
   // this resets all the neopixels to an off state
@@ -197,14 +209,3 @@ void loop() {
   }
 }
 
-void infoLight(RgbColor color) {
-  // Flash the strip in the selected color. White = booted, green = WLAN connected, red = WLAN could not connect
-  for (int i = 0; i < pixelCount; i++)
-  {
-    strip.SetPixelColor(i, color);
-    strip.Show();
-    delay(10);
-    strip.SetPixelColor(i, black);
-    strip.Show();
-  }
-}
